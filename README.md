@@ -1,5 +1,5 @@
 # Network Clock NTP Sync Automation
-**Python · Robot Framework · pywinauto · .NET Reverse Engineering**
+**Python · Robot Framework · pywinauto**
 
 ---
 
