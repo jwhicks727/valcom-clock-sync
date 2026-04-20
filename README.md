@@ -128,3 +128,6 @@ into an automated monitoring system.
 **Email summary** — automatically sending the pass/fail summary to the IT
 team's inbox after each batch run would make the check something that runs 
 on a schedule rather than requiring someone to read the terminal output.
+
+**Repackage as exe** — packaging the process as an exe or similarly user-friendly 
+execution method so it may be used by non-technical staff.
