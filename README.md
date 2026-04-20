@@ -5,14 +5,14 @@
 
 ## The Problem
 
-SOAR Charter Academy has approximately 30 Valcom SpeakerPlus network clocks
-spread across campus. Each clock syncs its time via NTP, and when a clock
-drifts or loses sync, the only way to check it is through a Windows desktop
+SOAR Charter Academy has approximately 25 Valcom SpeakerPlus network clocks
+spread across campus. Each clock can sync its time via NTP, but when a clock
+drifts or loses sync, the only way to sync it is through a Windows desktop
 utility — the Valcom Utility Program — which accepts one IP address at a time.
-Type the IP, click Start, wait up to three minutes for the NTP verification to
+Type the IP, click Start, wait up to ten minutes for the NTP verification to
 complete, read the result, then do it again for the next clock.
 
-Checking all 30 clocks manually takes over an hour and requires being
+Checking all 25 clocks manually can take several hours and requires being
 physically at the one PC that has the utility installed.
 
 I built an automation that checks every clock in a single run and generates
@@ -26,7 +26,7 @@ Two files work together:
 
 **ValcomLibrary.py** is a custom Robot Framework keyword library written in
 Python. It uses pywinauto to connect to the running Valcom Utility and drive
-it programmatically — entering each clock's IP address, clicking Start, waiting
+it — entering each clock's IP address, clicking Start, waiting
 for the NTP check to complete, and capturing the results. Every public method
 in the class becomes a keyword that Robot Framework can call.
 
@@ -53,26 +53,14 @@ seemed like a natural fit. That plan lasted about ten minutes — the web UI
 returned a 502 Bad Gateway on every path. The CGI backend was broken, even
 though the HTTP server was alive.
 
-The next approach was SSH. A port scan confirmed that ports 21, 22, 23, and 80
-were all open. SSH connected successfully with the `root` username, but
-required a password that was hidden behind a "Use Factory Default Password"
-checkbox in the Windows utility. To find it, I decompiled the utility with
-ILSpy — it's a .NET WinForms application — and traced the login flow through
-the source code. I was able to confirm the SSH connection architecture and
-identify every UI control by its variable name, which became directly useful
-later.
-
-While investigating the decompiled code, I reconsidered the approach. The
-original goal was to demonstrate practical test automation skills, and driving
-a desktop application through a structured framework is more relevant to a
-product engineering role than writing SSH scripts. I pivoted to automating the
-utility itself using Robot Framework and pywinauto.
+Robot Framework and pywinauto were the next strategy, with the script running
+on the Windows machine running the Valcom Utility.
 
 The project presented several technical challenges:
 
 1. **Control identification** — pywinauto finds UI elements by their automation
 ID and control type, but the Valcom Utility's controls weren't documented.
-The IDs came from two sources: the ILSpy decompilation gave me the variable
+The IDs came from two sources: ILSpy decompilation gave me the variable
 names from the source code, and pywinauto's `print_control_identifiers()`
 confirmed which names the UI Automation framework actually recognized.
 
@@ -99,10 +87,10 @@ parsers with edge-case filters, I replaced the entire approach with a regex
 that scans the file for any valid IPv4 address pattern and ignores everything
 else.
 
-I used Claude as an AI coding partner throughout — for architecture decisions,
-debugging pywinauto control issues, and understanding Robot Framework syntax.
-The workflow was iterative: run the code, hit an error, diagnose it together,
-fix it, run again.
+I used Claude and Copilot as AI coding partners throughout — for architecture 
+decisions, debugging pywinauto control issues, and understanding Robot Framework 
+syntax. The workflow was iterative: run the code, hit an error, diagnose it 
+together, fix it, run again.
 
 ---
 
@@ -124,7 +112,7 @@ The reports live in the `results/` folder and can be opened in any browser.
 ## Status
 
 Working and tested on a 3-clock batch. Ready for full campus deployment
-across all 30 clocks pending completion of the clock IP inventory.
+across all 25 clocks pending completion of the clock IP inventory.
 
 ---
 
@@ -132,33 +120,11 @@ across all 30 clocks pending completion of the clock IP inventory.
 
 Several improvements are planned for future versions:
 
-**Time drift detection** — currently the check validates that the clock
-responded with a year, confirming NTP sync occurred. Comparing the clock's
-reported time against the PC's system clock would flag clocks that synced to
-NTP but are still showing the wrong time — catching timezone or DST
-configuration errors, not just connectivity failures.
-
-**Historical tracking** — saving each run's results to a persistent log (CSV or
-database) would allow tracking which clocks drift repeatedly versus which ones
-had a one-time failure. Patterns in the data could identify hardware issues or
-network problems affecting specific areas of campus.
-
-**Email summary** — automatically sending the pass/fail summary to the IT
-team's inbox or a Slack channel after each batch run would make the check
-something that runs on a schedule rather than requiring someone to read the
-terminal output.
-
-**SSH direct mode** — once the factory default password is identified, a
-parallel implementation that connects directly to each clock via SSH would
-eliminate the dependency on the Windows utility and the physical PC entirely.
-The Robot Framework suite could run from any machine on the network, including
-the Mac.
-
 **Scheduled execution** — wrapping the batch script in a Windows Task Scheduler
 job would allow the NTP check to run nightly or weekly without human
 intervention. Combined with email reporting, this turns a manual campus walk
 into an automated monitoring system.
 
-**Set time capability** — the utility also supports a "Set Date & Time"
-function. Extending the automation to not just check but correct clock times
-would make it a complete clock management tool rather than just a diagnostic.
+**Email summary** — automatically sending the pass/fail summary to the IT
+team's inbox after each batch run would make the check something that runs 
+on a schedule rather than requiring someone to read the terminal output.
