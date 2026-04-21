@@ -120,7 +120,7 @@ across all 25 clocks pending completion of the clock IP inventory.
 
 ## Completed Features
 
-**Scheduled execution** — the batch script is wrapped in a Windows Task
+**✅ Scheduled execution** — the batch script is wrapped in a Windows Task
 Scheduler job, allowing the NTP check to run on a recurring schedule without
 human intervention. Combined with the HTML reporting Robot Framework already
 generates, this turns a manual campus walk into an automated monitoring system.
