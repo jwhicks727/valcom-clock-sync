@@ -47,6 +47,13 @@ reports the result.
 This was my first project using Robot Framework and pywinauto, and my first
 time automating a desktop application rather than a web browser.
 
+I used Claude and GitHub Copilot as AI coding partners throughout the project. 
+They were helpful for architecture decisions, debugging pywinauto control
+issues, and learning Robot Framework syntax in context. The cycle was: run the
+code, hit an error, diagnose it with AI, apply the fix, run again. The domain
+knowledge — what the clocks do, how the utility behaves, what the school
+actually needs — was mine. The AI made the iteration loop faster.
+
 The original plan was to bypass the Windows utility entirely and talk to the
 clocks directly from my Mac. The clocks run an embedded web server, so Selenium
 seemed like a natural fit. That plan lasted about ten minutes — the web UI
@@ -87,11 +94,6 @@ parsers with edge-case filters, I replaced the entire approach with a regex
 that scans the file for any valid IPv4 address pattern and ignores everything
 else.
 
-I used Claude and Copilot as AI coding partners throughout — for architecture 
-decisions, debugging pywinauto control issues, and understanding Robot Framework 
-syntax. The workflow was iterative: run the code, hit an error, diagnose it 
-together, fix it, run again.
-
 ---
 
 ## What the Reports Look Like
@@ -116,18 +118,33 @@ across all 25 clocks pending completion of the clock IP inventory.
 
 ---
 
+## Completed Features
+
+**Scheduled execution** — the batch script is wrapped in a Windows Task
+Scheduler job, allowing the NTP check to run on a recurring schedule without
+human intervention. Combined with the HTML reporting Robot Framework already
+generates, this turns a manual campus walk into an automated monitoring system.
+
+---
+
 ## Roadmap
 
-Several improvements are planned for future versions:
-
-**Scheduled execution** — wrapping the batch script in a Windows Task Scheduler
-job would allow the NTP check to run nightly or weekly without human
-intervention. Combined with email reporting, this turns a manual campus walk
-into an automated monitoring system.
-
 **Email summary** — automatically sending the pass/fail summary to the IT
-team's inbox after each batch run would make the check something that runs 
-on a schedule rather than requiring someone to read the terminal output.
+team's inbox after each batch run would make results immediately visible
+without requiring someone to open the report file.
 
-**Repackage as exe** — packaging the process as an exe or similarly user-friendly 
-execution method so it may be used by non-technical staff.
+**Auto-remediation** — if a clock fails its NTP check, the automation would
+attempt a force sync before reporting it as a failure. Moves the tool from
+monitoring into self-healing, a different category of automation.
+
+**Repackage as exe** — packaging the process as an exe or similarly
+user-friendly execution method so it may be used by non-technical staff.
+
+**Historical tracking** — logging each run's results to a CSV or lightweight
+database to surface trends over time — which clocks drift most frequently,
+whether failures correlate with power events or network outages. Turns a
+point-in-time check into a monitoring system with memory.
+
+**Network discovery** — replacing the manual IP list with a subnet scan that
+identifies Valcom clocks by their HTTP response. Eliminates the dependency on
+a hand-maintained spreadsheet and catches clocks that get added or re-addressed.
