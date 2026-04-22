@@ -111,13 +111,6 @@ The reports live in the `results/` folder and can be opened in any browser.
 
 ---
 
-## Status
-
-Working and tested on a 3-clock batch. Ready for full campus deployment
-across all 25 clocks pending completion of the clock IP inventory.
-
----
-
 ## Completed Features
 
 **✅ Scheduled execution** — the batch script is wrapped in a Windows Task
