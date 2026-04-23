@@ -47,13 +47,6 @@ reports the result.
 This was my first project using Robot Framework and pywinauto, and my first
 time automating a desktop application rather than a web browser.
 
-I used Claude and GitHub Copilot as AI coding partners throughout the project. 
-They were helpful for architecture decisions, debugging pywinauto control
-issues, and learning Robot Framework syntax in context. The cycle was: run the
-code, hit an error, diagnose it with AI, apply the fix, run again. The domain
-knowledge — what the clocks do, how the utility behaves, what the school
-actually needs — was mine. The AI made the iteration loop faster.
-
 The original plan was to bypass the Windows utility entirely and talk to the
 clocks directly from my Mac. The clocks run an embedded web server, so Selenium
 seemed like a natural fit. That plan lasted about ten minutes — the web UI
